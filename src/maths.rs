@@ -507,6 +507,47 @@ impl Add<f64> for Matrix4 {
         self
     }
 }
+impl AddAssign<f64> for Matrix4 {
+    fn add_assign(&mut self, scalar: f64) {
+        self.iter_mut().flatten().for_each(|v| *v += scalar);
+    }
+}
+impl Sub<f64> for Matrix4 {
+    type Output = Self;
+    fn sub(mut self, scalar: f64) -> Self {
+        self.iter_mut().flatten().for_each(|v| *v -= scalar);
+        self
+    }
+}
+impl SubAssign<f64> for Matrix4 {
+    fn sub_assign(&mut self, scalar: f64) {
+        self.iter_mut().flatten().for_each(|v| *v -= scalar);
+    }
+}
+impl Mul<f64> for Matrix4 {
+    type Output = Self;
+    fn mul(mut self, scalar: f64) -> Self {
+        self.iter_mut().flatten().for_each(|v| *v *= scalar);
+        self
+    }
+}
+impl MulAssign<f64> for Matrix4 {
+    fn mul_assign(&mut self, scalar: f64) {
+        self.iter_mut().flatten().for_each(|v| *v *= scalar);
+    }
+}
+impl Div<f64> for Matrix4 {
+    type Output = Self;
+    fn div(mut self, scalar: f64) -> Self {
+        self.iter_mut().flatten().for_each(|v| *v /= scalar);
+        self
+    }
+}
+impl DivAssign<f64> for Matrix4 {
+    fn div_assign(&mut self, scalar: f64) {
+        self.iter_mut().flatten().for_each(|v| *v /= scalar);
+    }
+}
 
 /// ```rust
 /// use tendon::*;
@@ -520,6 +561,23 @@ impl Add for Matrix4 {
     fn add(mut self, matrix: Self) -> Self {
         self.iter_mut().zip(matrix.iter()).for_each(|(left, right)| left.iter_mut().zip(right.iter()).for_each(|(left, right)| *left += right));
         self
+    }
+}
+impl AddAssign for Matrix4 {
+    fn add_assign(&mut self, matrix: Self) {
+        self.iter_mut().zip(matrix.iter()).for_each(|(left, right)| left.iter_mut().zip(right.iter()).for_each(|(left, right)| *left += right))
+    }
+}
+impl Sub for Matrix4 {
+    type Output = Self;
+    fn sub(mut self, matrix: Self) -> Self {
+        self.iter_mut().zip(matrix.iter()).for_each(|(left, right)| left.iter_mut().zip(right.iter()).for_each(|(left, right)| *left -= right));
+        self
+    }
+}
+impl SubAssign for Matrix4 {
+    fn sub_assign(&mut self, matrix: Self) {
+        self.iter_mut().zip(matrix.iter()).for_each(|(left, right)| left.iter_mut().zip(right.iter()).for_each(|(left, right)| *left -= right))
     }
 }
 /// ```rust
