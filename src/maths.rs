@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
+use std::ops::{Deref, DerefMut, Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 /// A 2-dimensional vector with f64 components
 /// ```rust
@@ -16,7 +16,7 @@ impl Vector2 {
     /// ```rust
     /// use tendon::*;
     /// let v = Vector2 { x: 3.0, y: 4.0 };
-    /// let dif = v.magnitude() - 5.0f64.sqrt();
+    /// let dif = v.magnitude() - 5.0f64;
     /// assert!(dif.abs() < 1e-10);
     /// ```
     pub fn magnitude(self) -> f64 {
@@ -481,4 +481,87 @@ impl SubAssign for Vector4 {
     }
 }
 
-pub struct Matrix4([[f64; 4]; 4]);
+#[derive(Copy, Clone, Debug, Default)]
+pub struct Matrix4(pub [[f64; 4]; 4]);
+impl Matrix4 {
+    pub fn copy(&self) -> [[f64; 4]; 4] {
+        **self
+    }
+}
+impl Deref for Matrix4 {
+    type Target = [[f64; 4]; 4];
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl DerefMut for Matrix4 {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Add<f64> for Matrix4 {
+    type Output = Self;
+    fn add(mut self, scalar: f64) -> Self {
+        self.iter_mut().flatten().for_each(|v| *v += scalar);
+        self
+    }
+}
+
+/// ```rust
+/// use tendon::*;
+/// let m = Matrix4([[1.0; 4]; 4]);
+/// let r = m + m;
+/// let dif = r.iter().flatten().sum::<f64>() - 32.0;
+/// assert!(dif < 1e-10);
+/// ```
+impl Add for Matrix4 {
+    type Output = Self;
+    fn add(mut self, matrix: Self) -> Self {
+        self.iter_mut().zip(matrix.iter()).for_each(|(left, right)| left.iter_mut().zip(right.iter()).for_each(|(left, right)| *left += right));
+        self
+    }
+}
+/// ```rust
+/// use tendon::*;
+/// let a = Matrix4([
+///     [1.0, 2.0, 3.0, 4.0],
+///     [5.0, 6.0, 7.0, 8.0],
+///     [9.0, 10.0, 11.0, 12.0],
+///     [13.0, 14.0, 15.0, 16.0]
+/// ]);
+/// let b = Matrix4([
+///     [6.0, 3.5, 2.7, 0.0],
+///     [0.5, 8.0, -9.81, -2.0],
+///     [1.0 / 3.0, 100.0, 0.001, -8.0],
+///     [42.0, 7.11, 5.0, -4.3]
+/// ]);
+/// let expected = Matrix4([
+///     [176.0, 347.94, 3.083, -45.2],
+///     [371.333, 822.38, -5.353, -102.4],
+///     [566.667, 1296.82, -13.789, -159.6],
+///     [762.0, 1771.26, -22.225, -216.8]
+/// ]);
+/// const MAX_ERROR: f64 = 5e-4 + 1e-10;
+/// let result = a * b;
+/// result.iter().flatten().zip(expected.iter().flatten()).for_each(|(r,e)| assert!((r - e).abs() < MAX_ERROR));
+/// ```
+impl Mul for Matrix4 {
+    type Output = Self;
+    fn mul(self, matrix: Self) -> Self {
+        macro_rules! rc {
+            ($row:expr, $col:expr) => {
+                self[$row][0] * matrix[0][$col] +
+                self[$row][1] * matrix[1][$col] +
+                self[$row][2] * matrix[2][$col] +
+                self[$row][3] * matrix[3][$col]
+            };
+        }
+        Self([
+            [rc!(0, 0), rc!(0, 1), rc!(0, 2), rc!(0, 3)],
+            [rc!(1, 0), rc!(1, 1), rc!(1, 2), rc!(1, 3)],
+            [rc!(2, 0), rc!(2, 1), rc!(2, 2), rc!(2, 3)],
+            [rc!(3, 0), rc!(3, 1), rc!(3, 2), rc!(3, 3)]
+        ])
+    }
+}
