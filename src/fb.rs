@@ -8,9 +8,9 @@ extern "C" {
 
 /// Provides access to the linux framebuffer device.
 /// Requires that the user is in the `video` group.
-/// ```rust
+/// ```no_run
 /// use tendon::*;
-/// let fb = Framebuffer::new().expect("Unable to create framebuffer");
+/// let fb = Framebuffer::new();
 /// ```
 #[repr(C)]
 pub struct Framebuffer {
@@ -36,11 +36,23 @@ impl Framebuffer {
     }
     pub fn set(&mut self, x: usize, y: usize, colour: Colour) {
         let pos = (x + self.x_offset as usize) + (y + self.y_offset as usize) * self.line_length as usize;
-        unsafe {*self.buffer.add(pos) = *colour }
+        unsafe {*self.buffer.add(pos) = colour.convert(self) }
     }
 }
 impl Drop for Framebuffer {
     fn drop(&mut self) {
         unsafe { fb_destroy(self) }
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+#[repr(transparent)]
+pub struct Colour(pub u32);
+impl Colour {
+    /// Create a colour with the correct byte order for the framebuffer
+    pub fn convert(self, fb: &Framebuffer) -> u32 {
+        (self.0 & 0xFF00_0000) >> 24 << fb.red_offset |
+        (self.0 & 0x00FF_0000) >> 16 << fb.green_offset |
+        (self.0 & 0x0000_FF00) >> 8 << fb.blue_offset
     }
 }
