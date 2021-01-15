@@ -1,5 +1,18 @@
 use std::ops::{Deref, DerefMut, Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
+pub struct Tri(pub [Vector2; 3]);
+impl Deref for Tri {
+    type Target = [Vector2; 3];
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl DerefMut for Tri {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 /// A 2-dimensional vector with f64 components
 /// ```rust
 /// use tendon::*;
@@ -35,6 +48,16 @@ impl Vector2 {
             x: self.x * f,
             y: self.y * f
         }
+    }
+    /// The inverse of the gradient of the line given by the run divided by the rise of the line
+    /// ```rust
+    /// use tendon::*;
+    /// let v = Vector2 { x: 8.0, y: 4.0 };
+    /// let dif = v.inverse_gradient() - 2.0;
+    /// assert!(dif.abs() < 1e-10);
+    /// ```
+    pub fn inverse_gradient(self) -> f64 {
+        self.x / self.y
     }
     /// The dot (scalar) product of self and other.
     /// ```rust
