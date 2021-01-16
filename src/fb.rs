@@ -66,7 +66,7 @@ impl Framebuffer {
         }
         unsafe {*self.buffer.add(pos) = colour.convert(self) }
     }
-    pub fn draw_tri<'a>(&mut self, tri: Tri, uvs: [crate::maths::Vector3; 3], /*sampler: &Sampler<'a>*/) {
+    pub fn draw_tri<'a>(&mut self, tri: Tri, uvs: Tri, sampler: &Sampler<'a>) {
         let mut a = 0;
         let mut b = 1;
         let mut c = 2;
@@ -97,13 +97,7 @@ impl Framebuffer {
             for y in tri[a].y as usize .. tri[b].y as usize {
                 for x in x_start as usize .. x_end as usize {
                     let uv = tri.interpolate(&uvs, x as _, y as _);
-                    let c = Colour(
-                        ((uv.x * 255.0) as u32) << 24 |
-                        ((uv.y * 255.0) as u32) << 16 |
-                        ((uv.z * 255.0) as u32) << 8  |
-                        0xFF
-                    );
-                    self.set(x, y, /*sampler.sample(uv.x, uv.y)*/ c)
+                    self.set(x, y, sampler.sample(uv.x, uv.y))
                 }
                 x_start += l_grad;
                 x_end += r_grad;
@@ -124,13 +118,7 @@ impl Framebuffer {
             for y in tri[b].y as usize ..= tri[c].y as usize {
                 for x in x_start as usize .. x_end as usize {
                     let uv = tri.interpolate(&uvs, x as _, y as _);
-                    let c = Colour(
-                        ((uv.x * 255.0) as u32) << 24 |
-                        ((uv.y * 255.0) as u32) << 16 |
-                        ((uv.z * 255.0) as u32) << 8 |
-                        0xFF
-                    );
-                    self.set(x, y, /*sampler.sample(uv.x, uv.y)*/ c)
+                    self.set(x, y, sampler.sample(uv.x, uv.y))
                 }
                 x_start += l_grad;
                 x_end += r_grad;
@@ -182,6 +170,19 @@ pub struct Texture {
     pub height: usize
 }
 impl Texture {
+    pub fn load<P: AsRef<Path>>(path: P) -> image::ImageResult<Self> {
+        use image::{GenericImageView, Pixel};
+        let image = image::open(path)?;
+        let (width, height) = image.dimensions();
+        let buffer = image.pixels().map(|(_, _, p)|
+            Colour(u32::from_be_bytes(p.to_rgba().0))
+        ).collect();
+        Ok(Self {
+            buffer,
+            width: width as _,
+            height: height as _
+        })
+    }
     pub fn get(&self, x: usize, y: usize) -> Colour {
         #[cfg(debug_assertions)]
         if x >= self.width {
