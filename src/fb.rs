@@ -24,6 +24,8 @@ pub struct Framebuffer {
     blue_offset: u32,
     x_offset: u32,
     y_offset: u32,
+    x_res: u32,
+    y_res: u32,
     pub line_length: u32
 }
 impl Framebuffer {

@@ -14,6 +14,8 @@ struct fb {
     unsigned blue_offset;
     unsigned x_offset;
     unsigned y_offset;
+    unsigned x_res;
+    unsigned y_res;
     unsigned line_length;
 };
 
@@ -43,6 +45,8 @@ struct fb fb_create() {
     fb.blue_offset = var_info.blue.offset;
     fb.x_offset = var_info.xoffset;
     fb.y_offset = var_info.yoffset;
+    fb.x_res = var_info.xres;
+    fb.y_res = var_info.yres;
     fb.line_length = fix_info.line_length / sizeof(unsigned);
     fb.buffer_len = fix_info.smem_len;
 
