@@ -149,3 +149,30 @@ impl Colour {
         )
     }
 }
+
+pub struct Sampler<'a> {
+    pub texture: &'a Texture
+}
+impl<'a> Sampler<'a> {
+    /// Get the pixel nearest `x` and `y`
+    pub fn sample(&self, x: f64, y: f64) -> Colour {
+        self.texture.get(
+            f64::floor(x.fract().abs() * self.texture.width as f64) as usize,
+            f64::floor(y.fract().abs() * self.texture.height as f64) as usize
+        )
+    }
+}
+pub struct Texture {
+    pub buffer: Vec<Colour>,
+    pub width: usize,
+    pub height: usize
+}
+impl Texture {
+    pub fn get(&self, x: usize, y: usize) -> Colour {
+        #[cfg(debug_assertions)]
+        if x >= self.width {
+            panic!("Cannot index texture of width {} by x index {}", self.width, x)
+        }
+        self.buffer[x + y * self.width]
+    }
+}

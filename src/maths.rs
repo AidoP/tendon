@@ -65,10 +65,30 @@ impl Vector2 {
     /// let a = Vector2 { x: 3.0, y: 4.0 };
     /// let b = Vector2 { x: -1.0, y: 1.5 };
     /// let dif = a.dot(b) - 3.0;
-    /// assert!(dif < 1e-10);
+    /// assert!(dif.abs() < 1e-10);
     /// ```
     pub fn dot(self, other: Self) -> f64 {
         self.x * other.x + self.y * other.y
+    }
+    /// The area of the triangle given two edge vectors
+    /// Calculated using the triple scalar product
+    /// ```rust
+    /// use tendon::*;
+    /// let a = Vector2 { x: 3.0, y: 0.0 };
+    /// let b = Vector2 { x: 0.0, y: 5.0 };
+    /// let dif = a.area_tri(b) - 7.5;
+    /// assert!(dif.abs() < 1e-10);
+    /// let a = Vector2 { x: 3.0, y: 4.0 };
+    /// let b = Vector2 { x: 7.0, y: -5.0 };
+    /// let c = a - b;
+    /// let (x, y, z) = (a.magnitude(), b.magnitude(), c.magnitude());
+    /// let expected = f64::sqrt((x + y - z) * (x - y + z) * (-x + y + z) * (x + y + z)) / 4.0;
+    /// let dif = a.area_tri(b) - expected;
+    /// assert!(dif.abs() < 1e-10);
+    /// ```
+    pub fn area_tri(self, other: Self) -> f64 {
+        // The triple product can be simplified a lot as the 3rd vector is always `Vector3 { x: 0, y: 0, z: 1 }` and the two vectors have no z component
+        (self.x * other.y - self.y * other.x).abs() * 0.5
     }
 }
 
@@ -208,7 +228,7 @@ impl Vector3 {
     /// let a = Vector3 { x: 3.0, y: 4.0, z: 5.0 };
     /// let b = Vector3 { x: -1.0, y: 1.5, z: 0.5 };
     /// let dif = a.dot(b) - 5.5;
-    /// assert!(dif < 1e-10);
+    /// assert!(dif.abs() < 1e-10);
     /// ```
     pub fn dot(self, other: Self) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
@@ -381,7 +401,7 @@ impl Vector4 {
     /// let a = Vector4 { x: 3.0, y: 4.0, z: 5.0, w: 6.0 };
     /// let b = Vector4 { x: -1.0, y: 1.5, z: 0.5, w: -1.0 / 3.0 };
     /// let dif = a.dot(b) - 3.5;
-    /// assert!(dif < 1e-10);
+    /// assert!(dif.abs() < 1e-10);
     /// ```
     pub fn dot(self, other: Self) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
@@ -577,7 +597,7 @@ impl DivAssign<f64> for Matrix4 {
 /// let m = Matrix4([[1.0; 4]; 4]);
 /// let r = m + m;
 /// let dif = r.iter().flatten().sum::<f64>() - 32.0;
-/// assert!(dif < 1e-10);
+/// assert!(dif.abs() < 1e-10);
 /// ```
 impl Add for Matrix4 {
     type Output = Self;
