@@ -66,7 +66,7 @@ impl Framebuffer {
         }
         unsafe {*self.buffer.add(pos) = colour.convert(self) }
     }
-    pub fn draw_tri(&mut self, tri: Tri) {
+    pub fn draw_tri<'a>(&mut self, tri: Tri, uvs: [crate::maths::Vector3; 3], /*sampler: &Sampler<'a>*/) {
         let mut a = 0;
         let mut b = 1;
         let mut c = 2;
@@ -96,7 +96,14 @@ impl Framebuffer {
             let mut x_end = x_start;
             for y in tri[a].y as usize .. tri[b].y as usize {
                 for x in x_start as usize .. x_end as usize {
-                    self.set(x, y, Colour(0xFF0000FF))
+                    let uv = tri.interpolate(&uvs, x as _, y as _);
+                    let c = Colour(
+                        ((uv.x * 255.0) as u32) << 24 |
+                        ((uv.y * 255.0) as u32) << 16 |
+                        ((uv.z * 255.0) as u32) << 8  |
+                        0xFF
+                    );
+                    self.set(x, y, /*sampler.sample(uv.x, uv.y)*/ c)
                 }
                 x_start += l_grad;
                 x_end += r_grad;
@@ -116,7 +123,14 @@ impl Framebuffer {
             };
             for y in tri[b].y as usize ..= tri[c].y as usize {
                 for x in x_start as usize .. x_end as usize {
-                    self.set(x, y, Colour(0xFF0000FF))
+                    let uv = tri.interpolate(&uvs, x as _, y as _);
+                    let c = Colour(
+                        ((uv.x * 255.0) as u32) << 24 |
+                        ((uv.y * 255.0) as u32) << 16 |
+                        ((uv.z * 255.0) as u32) << 8 |
+                        0xFF
+                    );
+                    self.set(x, y, /*sampler.sample(uv.x, uv.y)*/ c)
                 }
                 x_start += l_grad;
                 x_end += r_grad;

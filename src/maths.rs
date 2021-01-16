@@ -1,6 +1,24 @@
 use std::ops::{Deref, DerefMut, Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 pub struct Tri(pub [Vector2; 3]);
+impl Tri {
+    /// Interpolate the uv coordinates in barycentric space
+    pub fn interpolate(&self, other: &[Vector3; 3], x: f64, y: f64) -> Vector3 {
+        let p = Vector2 { x, y };
+        let edge_a = self[1] - self[2];
+        let edge_b = self[0] - self[2];
+        let edge_c = self[0] - self[1];
+        let total_area = edge_a.area_tri(edge_b);
+        let weight_a = edge_a.area_tri(p - self[2]) / total_area;
+        let weight_b = edge_b.area_tri(p - self[2]) / total_area;
+        let weight_c = edge_c.area_tri(p - self[1]) / total_area;
+        Vector3 {
+            x: weight_a * other[0].x + weight_b * other[1].x + weight_c * other[2].x,
+            y: weight_a * other[0].y + weight_b * other[1].y + weight_c * other[2].y,
+            z: weight_a * other[0].z + weight_b * other[1].z + weight_c * other[2].z,
+        }
+    }
+}
 impl Deref for Tri {
     type Target = [Vector2; 3];
     fn deref(&self) -> &Self::Target {
