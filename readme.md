@@ -8,4 +8,5 @@ An old-school DOOM-like game. Features a custom software rasterisation engine an
 0. [Vector Maths](https://aidop.github.io/blog/2020/01/04/software-rasteriser-vectors)
 1. [Using the Linux framebuffer device](https://aidop.github.io/blog/2020/01/14/software-rasteriser-framebuffer)
 2. [Triangle rasterisation and texture mapping](https://aidop.github.io/blog/2020/01/16/software-rasteriser-triangles)
+
 ![Texture mapped triangles showing texture wrapping and transformations such as skewing](https://aidop.github.io/blog/assets/texture_mapping_triangles.png)
