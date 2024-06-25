@@ -15,6 +15,7 @@ pub struct Vector2 {
 
 impl Vector2 {
     #[inline]
+    #[must_use]
     pub const fn new(x: f32, y: f32) -> Self {
         Self { x, y }
     }
@@ -24,6 +25,7 @@ impl Vector2 {
     /// assert_eq!(<[f32; 2]>::from(Vector2 { x: 1.0, y: 2.0 }), [1.0, 2.0]);
     /// ```
     #[inline]
+    #[must_use]
     pub const fn as_array(self) -> [f32; 2] {
         [self.x, self.y]
     }
@@ -33,6 +35,7 @@ impl Vector2 {
     /// assert_eq!(Vector2::from([1.0, 2.0]), Vector2 { x: 1.0, y: 2.0 });
     /// ```
     #[inline]
+    #[must_use]
     pub const fn from_array([x, y]: [f32; 2]) -> Self {
         Self { x, y }
     }
@@ -42,6 +45,7 @@ impl Vector2 {
     /// assert_eq!(<(f32, f32)>::from(Vector2 { x: 1.0, y: 2.0 }), (1.0, 2.0));
     /// ```
     #[inline]
+    #[must_use]
     pub const fn as_tuple(self) -> (f32, f32) {
         (self.x, self.y)
     }
@@ -51,6 +55,7 @@ impl Vector2 {
     /// assert_eq!(Vector2::from((1.0, 2.0)), Vector2 { x: 1.0, y: 2.0 });
     /// ```
     #[inline]
+    #[must_use]
     pub const fn from_tuple((x, y): (f32, f32)) -> Self {
         Self { x, y }
     }
@@ -62,6 +67,7 @@ impl Vector2 {
     ///     5.0
     /// );
     /// ```
+    #[must_use]
     pub fn magnitude(self) -> f32 {
         (self.x.powi(2) + self.y.powi(2)).sqrt()
     }
@@ -75,6 +81,7 @@ impl Vector2 {
     ///     e.as_array().as_slice()
     /// );
     /// ```
+    #[must_use]
     pub fn normal(self) -> Self {
         let m = self.magnitude();
         Self {
@@ -92,6 +99,7 @@ impl Vector2 {
     ///     3.0
     /// );
     /// ```
+    #[must_use]
     pub fn dot(self, rhs: Self) -> f32 {
         self.x * rhs.x + self.y * rhs.y
     }

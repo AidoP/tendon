@@ -19,6 +19,7 @@ pub struct Vector4 {
 
 impl Vector4 {
     #[inline]
+    #[must_use]
     pub const fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
         Self { x, y, z, w }
     }
@@ -31,6 +32,7 @@ impl Vector4 {
     /// );
     /// ```
     #[inline]
+    #[must_use]
     pub const fn as_array(self) -> [f32; 4] {
         [self.x, self.y, self.z, self.w]
     }
@@ -43,6 +45,7 @@ impl Vector4 {
     /// );
     /// ```
     #[inline]
+    #[must_use]
     pub const fn from_array([x, y, z, w]: [f32; 4]) -> Self {
         Self { x, y, z, w }
     }
@@ -55,6 +58,7 @@ impl Vector4 {
     /// );
     /// ```
     #[inline]
+    #[must_use]
     pub const fn as_tuple(self) -> (f32, f32, f32, f32) {
         (self.x, self.y, self.z, self.w)
     }
@@ -67,6 +71,7 @@ impl Vector4 {
     /// );
     /// ```
     #[inline]
+    #[must_use]
     pub const fn from_tuple((x, y, z, w): (f32, f32, f32, f32)) -> Self {
         Self { x, y, z, w }
     }
@@ -78,6 +83,7 @@ impl Vector4 {
     ///     5.0
     /// );
     /// ```
+    #[must_use]
     pub fn magnitude(self) -> f32 {
         (self.x.powi(2) + self.y.powi(2) + self.z.powi(2) + self.w.powi(2)).sqrt()
     }
@@ -91,6 +97,7 @@ impl Vector4 {
     ///     normal.as_array().as_slice()
     /// );
     /// ```
+    #[must_use]
     pub fn normal(self) -> Self {
         let m = self.magnitude();
         Self {
@@ -110,6 +117,7 @@ impl Vector4 {
     ///     20.0
     /// );
     /// ```
+    #[must_use]
     pub fn dot(self, rhs: Self) -> f32 {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z + self.w * rhs.w
     }
